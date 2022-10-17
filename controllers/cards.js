@@ -23,9 +23,14 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
+  // eslint-disable-next-line no-console
+  console.log(req.params);
   Card.findByIdAndRemove(req.params.cardId).orFail()
     .then((card) => res.send(card))
-    .catch(() => {
+    .catch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при удалении карточки.' });
+      }
       res.status(NOT_FOUND).send({ message: 'Карточка с указанным _id не найдена.' });
     });
 };
@@ -38,7 +43,7 @@ const likeCard = (req, res) => {
   ).orFail()
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
+      if (err instanceof mongoose.Error.CastError) {
         res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
       }
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
@@ -56,7 +61,7 @@ const dislikeCard = (req, res) => {
   ).orFail()
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
+      if (err instanceof mongoose.Error.CastError) {
         res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
       }
       if (err instanceof mongoose.Error.DocumentNotFoundError) {

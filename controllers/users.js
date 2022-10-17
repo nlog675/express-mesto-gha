@@ -8,7 +8,7 @@ const getUsers = (req, res) => {
       res.status(200).send({ users });
     })
     .catch(() => {
-      res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
+      res.status(DEFAULT_ERROR).send({ message: 'На сервере произошла ошибка.' });
     });
 };
 
@@ -30,7 +30,7 @@ const getUserById = (req, res) => {
         res.status(NOT_FOUND).send({ message: 'Пользователь по указанному _id не найден.' });
         return;
       }
-      res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
+      res.status(DEFAULT_ERROR).send({ message: 'На сервере произошла ошибка.' });
     });
 };
 
@@ -46,7 +46,7 @@ const updateProfile = (req, res) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
         res.status(NOT_FOUND).send({ message: 'Пользователь с указанным _id не найден.' });
       }
-      res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
+      res.status(DEFAULT_ERROR).send({ message: 'На сервере произошла ошибка.' });
     });
 };
 
@@ -62,7 +62,7 @@ const updateAvatar = (req, res) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
         res.status(NOT_FOUND).send({ message: 'Пользователь с указанным _id не найден.' });
       }
-      res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
+      res.status(DEFAULT_ERROR).send({ message: 'На сервере произошла ошибка.' });
     });
 };
 

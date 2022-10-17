@@ -7,7 +7,7 @@ const getCards = (req, res) => Card.find({})
     res.status(200).send({ cards });
   })
   .catch(() => {
-    res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
+    res.status(DEFAULT_ERROR).send({ message: 'На сервере произошла ошибка.' });
   });
 
 const createCard = (req, res) => {
@@ -44,7 +44,7 @@ const likeCard = (req, res) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
         res.status(NOT_FOUND).send({ message: 'Передан несуществующий _id карточки.' });
       }
-      res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию' });
+      res.status(DEFAULT_ERROR).send({ message: 'На сервере произошла ошибка.' });
     });
 };
 
@@ -62,7 +62,7 @@ const dislikeCard = (req, res) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
         res.status(NOT_FOUND).send({ message: 'Передан несуществующий _id карточки.' });
       }
-      res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию' });
+      res.status(DEFAULT_ERROR).send({ message: 'На сервере произошла ошибка.' });
     });
 };
 

@@ -23,12 +23,15 @@ const createUser = (req, res) => {
 };
 
 const getUserById = (req, res) => {
-  User.findById(req.params.id).orFail()
+  User.findById(req.params.userId).orFail()
     .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
         res.status(NOT_FOUND).send({ message: 'Пользователь по указанному _id не найден.' });
         return;
+      }
+      if (err instanceof mongoose.Error.CastError) {
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при поске пользователя.' });
       }
       res.status(DEFAULT_ERROR).send({ message: 'На сервере произошла ошибка.' });
     });

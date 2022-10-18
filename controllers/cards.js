@@ -18,7 +18,7 @@ const createCard = (req, res) => {
       res.status(201).send(card);
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
+      if (err instanceof mongoose.Error.ValidationError) {
         res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании карточки.' });
         return;
       }

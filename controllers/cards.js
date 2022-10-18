@@ -17,21 +17,28 @@ const createCard = (req, res) => {
     .then((card) => {
       res.status(201).send(card);
     })
-    .catch(() => {
-      res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании карточки.' });
+    .catch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании карточки.' });
+        return;
+      }
+      res.status(DEFAULT_ERROR).send({ message: 'На сервере произошла ошибка.' });
     });
 };
 
 const deleteCard = (req, res) => {
-  // eslint-disable-next-line no-console
-  console.log(req.params);
   Card.findByIdAndRemove(req.params.cardId).orFail()
     .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при удалении карточки.' });
+        return;
       }
-      res.status(NOT_FOUND).send({ message: 'Карточка с указанным _id не найдена.' });
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        res.status(NOT_FOUND).send({ message: 'Карточка с указанным _id не найдена.' });
+        return;
+      }
+      res.status(DEFAULT_ERROR).send({ message: 'На сервере произошла ошибка.' });
     });
 };
 
@@ -45,9 +52,11 @@ const likeCard = (req, res) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
+        return;
       }
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
         res.status(NOT_FOUND).send({ message: 'Передан несуществующий _id карточки.' });
+        return;
       }
       res.status(DEFAULT_ERROR).send({ message: 'На сервере произошла ошибка.' });
     });
@@ -63,9 +72,11 @@ const dislikeCard = (req, res) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
+        return;
       }
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
         res.status(NOT_FOUND).send({ message: 'Передан несуществующий _id карточки.' });
+        return;
       }
       res.status(DEFAULT_ERROR).send({ message: 'На сервере произошла ошибка.' });
     });

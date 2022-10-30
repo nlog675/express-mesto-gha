@@ -25,7 +25,7 @@ const createUser = (req, res, next) => {
     }))
     .then((user) => res.status(200).send({ user }))
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
+      if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
       }
       if (err.code === 11000) {

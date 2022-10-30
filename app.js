@@ -22,9 +22,10 @@ app.use('*', () => {
   throw new NotFoundError('Такой страницы не существует');
 });
 app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-
-  res.status(statusCode).send({ message });
+  const { errorCode = 500, message } = err;
+  res.status(errorCode).send({
+    message: errorCode === 500 ? 'Ошибка сервера' : message,
+  });
   next();
 });
 

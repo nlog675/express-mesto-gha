@@ -24,8 +24,8 @@ app.use('*', () => {
   throw new NotFoundError('Такой страницы не существует');
 });
 app.use((err, req, res, next) => {
-  const { errorCode = 500, message } = err;
-  res.status(errorCode).send({ message });
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({ message });
   next();
 });
 

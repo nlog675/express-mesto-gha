@@ -5,6 +5,7 @@ const cardRouter = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
 const { loginValidation, registerValidation } = require('./middlewares/validation');
 const NotFoundError = require('./utils/NotFoundError');
+const auth = require('./middlewares/auth');
 
 const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
 
@@ -18,13 +19,14 @@ app.post('/signin', loginValidation, login);
 app.post('/signup', registerValidation, createUser);
 app.use('/', userRouter);
 app.use('/', cardRouter);
+app.use(auth);
 app.use('*', () => {
   throw new NotFoundError('Такой страницы не существует');
 });
 app.use((err, req, res, next) => {
-  const { errorCode = 500, message } = err;
-  res.status(errorCode).send({
-    message: errorCode === 500 ? 'Ошибка сервера' : message,
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({
+    message: statusCode === 500 ? 'Ошибка сервера' : message,
   });
   next();
 });

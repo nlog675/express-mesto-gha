@@ -36,6 +36,28 @@ const createUser = (req, res, next) => {
     });
 };
 
+// const createUser = (req, res, next) => {
+//   const {
+//     name, about, avatar, email, password,
+//   } = req.body;
+//   if (!password) {
+//     next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
+//   }
+//   bcrypt.hash(password, 10)
+//     .then((hash) => {
+//       User.create({
+//         name, about, avatar, email, password: hash,
+//       });
+//     })
+//     .then((user) => {
+//       if (!user) {
+//         next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
+//       }
+//       res.send(user);
+//     })
+//     .catch(next);
+// };
+
 const getUserById = (req, res, next) => {
   User.findById(req.params.userId).orFail(() => {
     throw new NotFoundError('Пользователь по указанному _id не найден.');

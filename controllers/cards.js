@@ -26,21 +26,41 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId).orFail(() => {
-    throw new NotFoundError('Карточка с указанным _id не найдена.');
-  })
+  Card.findById(req.params.cardId)
     .then((card) => {
-      if (card.owner.toHexString() !== req.user._id) {
-        next(new ForbiddenError('Недостаточно прав'));
+      if (!card) {
+        throw new NotFoundError('Карточка с указанным _id не найдена.');
       }
+      if (card.owner.toHexString() !== req.user._id) {
+        throw new ForbiddenError('Недостаточно прав');
+      }
+      return Card.findByIdAndRemove(req.params.cardId)
+        .then((removingCard) => res.send(removingCard));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        next(new BadRequestError('Переданы некорректные данные при удалении карточки.'));
+        return next(new BadRequestError('Переданы некорректные данные при удалении карточки.'));
       }
-      next(err);
+      return next(err);
     });
 };
+
+// const deleteCard = (req, res, next) => {
+//   Card.findByIdAndRemove(req.params.cardId).orFail(() => {
+//     throw new NotFoundError('Карточка с указанным _id не найдена.');
+//   })
+//     .then((card) => {
+//       if (card.owner.toHexString() !== req.user._id) {
+//         next(new ForbiddenError('Недостаточно прав'));
+//       }
+//     })
+//     .catch((err) => {
+//       if (err instanceof mongoose.Error.CastError) {
+//         next(new BadRequestError('Переданы некорректные данные при удалении карточки.'));
+//       }
+//       next(err);
+//     });
+// };
 
 const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(

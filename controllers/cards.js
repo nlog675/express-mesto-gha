@@ -6,7 +6,7 @@ const ForbiddenError = require('../utils/ForbiddenError');
 
 const getCards = (req, res, next) => Card.find({})
   .then((cards) => {
-    res.status(200).send({ cards });
+    res.status(200).send({ data: cards });
   })
   .catch((err) => next(err));
 
@@ -15,7 +15,7 @@ const createCard = (req, res, next) => {
 
   Card.create({ name, link, owner: req.user._id })
     .then((card) => {
-      res.status(201).send(card);
+      res.status(201).send({ data: card });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
@@ -47,10 +47,13 @@ const likeCard = (req, res, next) => {
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
-  ).orFail(() => {
-    throw new NotFoundError('Передан несуществующий _id карточки.');
-  })
-    .then((card) => res.send(card))
+  )
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundError('Передан несуществующий _id карточки.');
+      }
+      return res.send({ data: card });
+    })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка.'));

@@ -8,8 +8,8 @@ const {
 } = require('../middlewares/validation');
 
 router.get('/users', auth, getUsers);
-router.get('/users/:userId', auth, userIdValidation, getUserById);
 router.get('/users/me', auth, getUser);
+router.get('/users/:userId', auth, userIdValidation, getUserById);
 router.patch('/users/me', auth, updateProfileValidation, updateProfile);
 router.patch('/users/me/avatar', auth, udateAvatarValidation, updateAvatar);
 

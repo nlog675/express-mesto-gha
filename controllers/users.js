@@ -23,6 +23,7 @@ const createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
+    .then((user) => User.findOne({ _id: user._id }))
     .then((user) => res.status(200).send({ user }))
     // eslint-disable-next-line consistent-return
     .catch((err) => {

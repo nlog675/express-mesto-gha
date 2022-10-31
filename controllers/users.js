@@ -36,28 +36,6 @@ const createUser = (req, res, next) => {
     });
 };
 
-// const createUser = (req, res, next) => {
-//   const {
-//     name, about, avatar, email, password,
-//   } = req.body;
-//   if (!password) {
-//     next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
-//   }
-//   bcrypt.hash(password, 10)
-//     .then((hash) => {
-//       User.create({
-//         name, about, avatar, email, password: hash,
-//       });
-//     })
-//     .then((user) => {
-//       if (!user) {
-//         next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
-//       }
-//       res.send(user);
-//     })
-//     .catch(next);
-// };
-
 const getUserById = (req, res, next) => {
   User.findById(req.params.userId).orFail(() => {
     throw new NotFoundError('Пользователь по указанному _id не найден.');
@@ -105,14 +83,20 @@ const updateAvatar = (req, res, next) => {
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
-
-  return User.findUserByCredentials(email, password)
+  User.findByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-
+      res.cookie('jwt', token, {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true,
+      });
       res.send({ token });
     })
-    .catch(() => next(new UnauthorizedError('Неправильный логин или пароль')));
+    .catch((err) => {
+      if (err.name === 'Incorrect email') {
+        next(new UnauthorizedError('Неправильный логин или пароль'));
+      }
+    });
 };
 
 const getUser = (req, res, next) => {

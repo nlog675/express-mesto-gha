@@ -6,7 +6,7 @@ const ForbiddenError = require('../utils/ForbiddenError');
 
 const getCards = (req, res, next) => Card.find({})
   .then((cards) => {
-    res.status(200).send({ data: cards });
+    res.status(200).send(cards);
   })
   .catch((err) => next(err));
 
@@ -15,13 +15,13 @@ const createCard = (req, res, next) => {
 
   Card.create({ name, link, owner: req.user._id })
     .then((card) => {
-      res.status(201).send({ data: card });
+      res.send(card);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
+        return next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -31,17 +31,17 @@ const deleteCard = (req, res, next) => {
       if (!card) {
         throw new NotFoundError('Карточка с указанным _id не найдена.');
       }
-      if (card.owner.toString() !== req.user._id) {
+      if (card.owner.toHexString() !== req.user._id) {
         throw new ForbiddenError('Недостаточно прав');
       }
-      return Card.findByIdAndRemove(req.params.cardId)
+      Card.findByIdAndRemove(req.params.cardId)
         .then((removingCard) => res.send(removingCard));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return next(new BadRequestError('Переданы некорректные данные при удалении карточки.'));
+        next(new BadRequestError('Переданы некорректные данные при удалении карточки.'));
       }
-      return next(err);
+      next(err);
     });
 };
 

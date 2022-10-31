@@ -19,8 +19,8 @@ app.post('/signin', loginValidation, login);
 app.post('/signup', registerValidation, createUser);
 app.use('/', userRouter);
 app.use('/', cardRouter);
-app.use('*', () => {
-  throw new NotFoundError('Такой страницы не существует');
+app.use('*', (req, res, next) => {
+  next(new NotFoundError('Такой страницы не существует'));
 });
 app.use(errors());
 app.use((err, req, res, next) => {

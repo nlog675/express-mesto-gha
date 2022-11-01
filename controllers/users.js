@@ -82,23 +82,6 @@ const updateAvatar = (req, res, next) => {
     });
 };
 
-// const login = (req, res, next) => {
-//   const { email, password } = req.body;
-//   return User.findByCredentials(email, password)
-//     .then((user) => {
-//       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-//       res.cookie('jwt', token, {
-//         maxAge: 3600000 * 24 * 7,
-//         httpOnly: true,
-//       });
-//       res.send({ token });
-//     })
-//     .catch((err) => {
-//       if (err.name === 'Incorrect email') {
-//         next(new UnauthorizedError('Неправильный логин или пароль'));
-//       }
-//     });
-// };
 const login = (req, res, next) => {
   const { email, password } = req.body;
   User.findOne({ email }).select('+password')

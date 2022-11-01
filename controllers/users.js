@@ -28,10 +28,10 @@ const createUser = (req, res, next) => {
     // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
+        next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
       }
       if (err.code === 11000) {
-        return next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
+        next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
       }
       next(err);
     });

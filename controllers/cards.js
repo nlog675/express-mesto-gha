@@ -12,16 +12,18 @@ const getCards = (req, res, next) => Card.find({})
 
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
-
   Card.create({ name, link, owner: req.user._id })
     .then((card) => {
-      res.send(card);
+      if (!card) {
+        next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
+      }
+      res.send({ data: card });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
+        next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
       }
-      return next(err);
+      next(err);
     });
 };
 
@@ -44,23 +46,6 @@ const deleteCard = (req, res, next) => {
       next(err);
     });
 };
-
-// const deleteCard = (req, res, next) => {
-//   Card.findByIdAndRemove(req.params.cardId).orFail(() => {
-//     throw new NotFoundError('Карточка с указанным _id не найдена.');
-//   })
-//     .then((card) => {
-//       if (card.owner.toHexString() !== req.user._id) {
-//         next(new ForbiddenError('Недостаточно прав'));
-//       }
-//     })
-//     .catch((err) => {
-//       if (err instanceof mongoose.Error.CastError) {
-//         next(new BadRequestError('Переданы некорректные данные при удалении карточки.'));
-//       }
-//       next(err);
-//     });
-// };
 
 const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(

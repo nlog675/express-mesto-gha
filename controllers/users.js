@@ -23,15 +23,20 @@ const createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => User.findOne({ _id: user._id }))
+    // .then((user) => User.findOne({ _id: user._id }))
+    .then((user) => {
+      const newUser = user.toObject();
+      newUser.password.delete();
+      return res.status(201).send(newUser);
+    })
     .then((user) => res.status(200).send({ user }))
     // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
+        return next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
       }
       if (err.code === 11000) {
-        next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
+        return next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
       }
       next(err);
     });
@@ -42,9 +47,10 @@ const getUserById = (req, res, next) => {
     throw new NotFoundError('Пользователь по указанному _id не найден.');
   })
     .then((user) => res.send(user))
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        next(new BadRequestError('Переданы некорректные данные при поске пользователя.'));
+        return next(new BadRequestError('Переданы некорректные данные при поске пользователя.'));
       }
       next(err);
     });
@@ -58,9 +64,10 @@ const updateProfile = (req, res, next) => {
       throw new NotFoundError('Пользователь с указанным _id не найден.');
     })
     .then((updatedUser) => res.send(updatedUser))
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError('Переданы некорректные данные при обновлении профиля.'));
+        return next(new BadRequestError('Переданы некорректные данные при обновлении профиля.'));
       }
       next(err);
     });
@@ -74,9 +81,10 @@ const updateAvatar = (req, res, next) => {
       throw new NotFoundError('Пользователь с указанным _id не найден.');
     })
     .then((updatedAvatar) => res.send(updatedAvatar))
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError('Переданы некорректные данные при обновлении аватара.'));
+        return next(new BadRequestError('Переданы некорректные данные при обновлении аватара.'));
       }
       next(err);
     });

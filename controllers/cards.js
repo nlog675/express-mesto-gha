@@ -14,14 +14,12 @@ const createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => {
-      if (!card) {
-        next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
-      }
       res.send({ data: card });
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
+        return next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
       }
       next(err);
     });
@@ -39,9 +37,10 @@ const deleteCard = (req, res, next) => {
       Card.findByIdAndRemove(req.params.cardId)
         .then((removingCard) => res.send(removingCard));
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        next(new BadRequestError('Переданы некорректные данные при удалении карточки.'));
+        return next(new BadRequestError('Переданы некорректные данные при удалении карточки.'));
       }
       next(err);
     });
@@ -59,9 +58,10 @@ const likeCard = (req, res, next) => {
       }
       return res.send({ data: card });
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка.'));
+        return next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка.'));
       }
       next(err);
     });
@@ -76,9 +76,10 @@ const dislikeCard = (req, res, next) => {
     throw new NotFoundError('Передан несуществующий _id карточки.');
   })
     .then((card) => res.send(card))
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка.'));
+        return next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка.'));
       }
       next(err);
     });

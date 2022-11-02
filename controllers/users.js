@@ -23,13 +23,11 @@ const createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    // .then((user) => User.findOne({ _id: user._id }))
     .then((user) => {
       const newUser = user.toObject();
-      newUser.password.delete();
+      delete newUser.password;
       return res.status(201).send(newUser);
     })
-    .then((user) => res.status(200).send({ user }))
     // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
